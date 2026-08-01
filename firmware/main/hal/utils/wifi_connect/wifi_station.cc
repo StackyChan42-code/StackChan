@@ -102,9 +102,13 @@ void StackChanWifiStation::Start()
     ESP_ERROR_CHECK(esp_event_handler_instance_register(
         IP_EVENT, IP_EVENT_STA_GOT_IP, &StackChanWifiStation::IpEventHandler, this, &instance_got_ip_));
 
-    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_start());
+   ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
+ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+
+uint8_t new_mac[6] = {0x02, 0x11, 0x22, 0x33, 0x44, 0x55};
+ESP_ERROR_CHECK(esp_wifi_set_mac(WIFI_IF_STA, new_mac));
+
+ESP_ERROR_CHECK(esp_wifi_start());
 
     is_started_ = true;
 }
