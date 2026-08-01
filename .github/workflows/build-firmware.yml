@@ -1,0 +1,40 @@
+name: Build StackChan Firmware
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "firmware/**"
+      - ".github/workflows/build-firmware.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v4
+
+      - name: ESP-IDF 5.5.4 einrichten und Firmware bauen
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.4
+          target: esp32s3
+          path: firmware
+          command: |
+            python3 fetch_repos.py
+            idf.py build
+
+      - name: Firmware-Dateien bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: stackchan-custom-mac
+          path: |
+            firmware/build/*.bin
+            firmware/build/bootloader/*.bin
+            firmware/build/partition_table/*.bin
+            firmware/build/flasher_args.json
+            firmware/build/flash_args
+          if-no-files-found: error
